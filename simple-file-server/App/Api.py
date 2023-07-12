@@ -19,6 +19,7 @@ flask_config = FlaskConfig()
 
 app.secret_key = flask_config.secret
 app.config["CORS_HEADERS"] = "Content-Type"
+app.url_map.strict_slashes = False
 app_config = AppConfig()
 
 
