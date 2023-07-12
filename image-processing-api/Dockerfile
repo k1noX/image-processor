@@ -1,8 +1,11 @@
 FROM python:3.9-alpine
 RUN apk add curl
-ADD requirements.txt /src/requirements.txt
+RUN apk add python3-dev build-base linux-headers pcre-dev
+RUN pip install uwsgi
+ADD ./requirements.txt /src/requirements.txt
 WORKDIR /src
 RUN pip install -r requirements.txt
 ADD src /src
+COPY ./wsgi.ini /src/wsgi.ini
 EXPOSE 5000
 ENV PYTHONUNBUFFERED=1 

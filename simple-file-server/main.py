@@ -3,4 +3,5 @@ from Config.Config import FlaskConfig
 
 flask_config = FlaskConfig()
 
-app.run(host=flask_config.host, port=flask_config.port)
+if __name__ == "__main__":
+    app.run(host=flask_config.host, port=flask_config.port)

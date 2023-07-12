@@ -1,3 +1,6 @@
 from injectors.flask import FlaskContainer
 
-FlaskContainer.run()
+app = FlaskContainer.app
+
+if __name__ == "__main__":
+    FlaskContainer.run()
