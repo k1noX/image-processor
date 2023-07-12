@@ -2,263 +2,227 @@
 
 Основные использованные библиотеки:
 1. Flask.
-2. SQLAlchemy.
-3. Psycopg2.
-
-Структура проекта:
-```
-├── README.md
-├── main.py
-├── Db
-│   ├── Mapper.py
-│   └── SessionMaker.py
-├── Files
-│   └── Utils.py
-├── Config
-│   └── Config.py
-├── App
-│   └── Api.py
-├── requirements.txt
-└── config.ini
-```
-
-* Api - инициализация API Flask.
-* Db - файлы работы с ORM и сессиями БД.
-* Files - вспомогательные функции для работы с файлами.
-* Config - классовые компоненты, выполняющие загрузку файла конфигурации.
-* main.py - выполняемая часть приложения.
+3. PostgreSQL.
+4. RabbitMQ.
+5. Nginx.
 
 ## Запуск 
 
 1. Клонирование репозитория.
-2. `pip install requirements.txt`.
-3. Создание базы данных: `python Db/init.py`.
-4. Запуск сервера `python main.py`.
-
-## Запуск в контейнере
-
-1. Клонирование репозитория.
-2. `docker-compose build`.
-3. `docker-compose up -d`.
-3. `docker-compose exec app python Db/init.py`.
+2. `docker-compose up --build`.
 
 ## Использование
-### Эндпоинты
-#### POST /
 
-REQUEST (FORM)
+## API
+### FileServer
+#### POST /api/file-server/
+
+> Добавление файла на сервер.
+
+REQUEST
 ```json
 {
-  "file": "файл",
   "name": "имя файла",
   "comment": "комментарий"
 }
 ```
+> Файл прикрепляется к форме в поле "file".
+
 
 RESPONSE
 ```json
 {
-  "comment": "забытый документ",
-  "created_at": "Tue, 04 Jul 2023 07:43:06 GMT",
+  "id": 1,
+  "comment": "doc",
   "extension": ".pdf",
   "name": "subka",
-  "path": "docs\\",
   "size": 244641,
+  "created_at": "Tue, 04 Jul 2023 07:43:06 GMT",
   "updated_at": "Tue, 04 Jul 2023 07:56:43 GMT"
 }
 ```
-#### GET /
+#### GET /api/file-server/
+
+> Получение списка всех файлов с сервера.
 
 RESPONSE
 ```json
 [
   {
-    "comment": "кто-то просит вернуть полтос",
-    "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
-    "exists": true,
-    "extension": ".png",
     "id": 36,
-    "name": "poltos",
-    "path": "screenshots\\discord\\",
+    "name": "filename",
+    "extension": ".ext",
+    "comment": "описание",
     "size": 14494,
+    "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
     "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT"
   },
   {
-    "comment": "исходный код апи",
-    "created_at": "Tue, 04 Jul 2023 07:43:13 GMT",
-    "exists": true,
-    "extension": ".py",
-    "id": 35,
-    "name": "Api",
-    "path": "code\\",
-    "size": 14869,
-    "updated_at": "Tue, 04 Jul 2023 07:46:21 GMT"
+    "id": 1,
+    "comment": "doc",
+    "extension": ".pdf",
+    "name": "subka",
+    "size": 244641,
+    "created_at": "Tue, 04 Jul 2023 07:43:06 GMT",
+    "updated_at": "Tue, 04 Jul 2023 07:56:43 GMT"
   }]
 ```
 
-#### GET /path/[path]
+#### GET /api/file-server/[id]
 
-Нахождение файла по его пути внутри файловой системы
+> Нахождение файла по его id.
 
 RESPONSE
 ```json
 {
-  "comment": "кто-то просит вернуть полтос",
-  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
-  "exists": true,
-  "extension": ".ext",
   "id": 36,
   "name": "filename",
-  "path": "path",
+  "extension": ".ext",
+  "comment": "описание",
   "size": 14494,
+  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
   "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT"
 }
 ```
 
+#### GET /api/file-server/[id]/download
 
-#### POST /path/[path]
+> Загрузка файла по его id.
 
-Добавление файла по пути в файловой системе
+RESPONSE - File
 
-REQUEST (FORM)
+#### PUT /api/file-server/[id]
+
+> Обновление данных о файле по его id.
+
+REQUEST
 ```json
 {
-  "file": "файл",
   "name": "имя файла",
   "comment": "комментарий"
 }
 ```
 
-#### GET /path/[path]/download
-
-Загрузка файла по его пути
-
-RESPONSE - File
-
-
-#### GET /file/[id]/download
-
-Загрузка файла по его id
-
-RESPONSE - File
-
-
-#### GET /file/[id]
-
-Нахождение файла по его id в БД
-
 RESPONSE
 ```json
 {
-  "comment": "кто-то просит вернуть полтос",
-  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
-  "exists": true,
-  "extension": ".ext",
   "id": 36,
   "name": "filename",
-  "path": "path",
-  "size": 14494,
-  "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT"
-}
-```
-
-#### PUT /file/[id]
-
-Обновление данных о файле по его id
-
-REQUEST (FORM)
-```json
-{
-  "name": "имя файла",
-  "comment": "комментарий",
-  "path": "путь к файлу"
-}
-```
-
-RESPONSE
-```json
-{
-  "comment": "кто-то просит вернуть полтос",
-  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
-  "exists": true,
   "extension": ".ext",
-  "id": 36,
-  "name": "filename",
-  "path": "path",
+  "comment": "описание",
   "size": 14494,
+  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
   "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT"
 }
 ```
 
 
-#### GET /path/[path]/
 
-Поиск файлов внутри указанного пути path.
+## API
+### ImageProcessing
+#### GET /api/image-processing/
 
-RESPONSE
+> Получение списка всех задач.
+
+REQUEST
 ```json
 [
-  {
-    "comment": "кто-то просит вернуть полтос",
-    "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
-    "exists": true,
-    "extension": ".png",
-    "id": 36,
-    "name": "poltos",
-    "path": "path",
-    "size": 14494,
-    "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT"
-  },
-  {
-    "comment": "исходный код апи",
-    "created_at": "Tue, 04 Jul 2023 07:43:13 GMT",
-    "exists": true,
-    "extension": ".py",
-    "id": 35,
-    "name": "Api",
-    "path": "path",
-    "size": 14869,
-    "updated_at": "Tue, 04 Jul 2023 07:46:21 GMT"
-  }]
+    {
+        "id": 1,
+        "source_id": 1,
+        "result_id": null,
+        "status": "pending",
+        "algorithm": "resize",
+        "params": {
+            "width": 128,
+            "height": 128
+        }
+    },
+    {
+        "id": 2,
+        "source_id": 3,
+        "result_id": 4,
+        "status": "finished",
+        "algorithm": "resize",
+        "params": {
+            "width": 128,
+            "height": 128
+        }
+    },
+    {
+        "id": 3,
+        "source_id": 3,
+        "result_id": null,
+        "status": "error",
+        "algorithm": "flip"
+    },
+    {
+        "id": 4,
+        "source_id": 3,
+        "result_id": null,
+        "status": "processing",
+        "algorithm": "flip"
+    }
+]
 ```
 
-#### PUT /path/[path]
+#### POST /api/image-processing/
 
-Обновление данных о файле
+> Создание задачи.
 
-REQUEST (FORM)
-
+REQUEST
 ```json
 {
-  "name": "имя файла",
-  "comment": "комментарий",
-  "path": "путь к файлу"
+  "file_ids": [1, 2, 3],
+  "algorithm": "resize",
+  "params": {
+    "width": 128,
+    "height": 128
+  }
 }
 ```
 
 RESPONSE
 ```json
 {
-  "comment": "кто-то просит вернуть полтос",
-  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
-  "exists": true,
-  "extension": ".ext",
-  "id": 36,
-  "name": "filename",
-  "path": "path",
-  "size": 14494,
-  "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT"
+  "task_ids": [1, 2, 3]
 }
 ```
 
+#### GET /api/image-processing/[id]
 
-#### POST /refresh
+> Получение задачи по id.
 
-Актуализация хранилища
-
-RESPONSE
+REQUEST
 ```json
 {
-  "message": "Storage Has Been Refreshed! 10 rows affected!"
+  "id": 1,
+  "source_id": 1,
+  "result_id": null,
+  "status": "pending",
+  "algorithm": "resize",
+  "params": {
+    "width": 128,
+    "height": 128
+  }
+}
+```
+
+#### POST /api/image-processing/[id]/restart
+
+> Перезапуск выполнения задачи, завершённой с ошибкой.
+
+REQUEST
+```json
+{
+  "id": 1,
+  "source_id": 1,
+  "result_id": null,
+  "status": "pending",
+  "algorithm": "resize",
+  "params": {
+    "width": 128,
+    "height": 128
+  }
 }
 ```
