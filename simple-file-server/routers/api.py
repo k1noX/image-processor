@@ -1,27 +1,16 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS, cross_origin
 import os
-import datetime
-import re
-from werkzeug.utils import secure_filename
 
 
-from Files.Utils import is_allowed_name, transliterate, secure_file_path, secure_path
-from Models.SessionMaker import get_db_session
-from Models.File import File, engine
-from Config.Config import AppConfig, FlaskConfig
+from utils.file_utils import transliterate
+from models.file import File
+from services.files import create_file
+from injectors.flask import FlaskContainer
+from injectors.app import AppContainer
+from injectors.db import DbContainer
 
-
-app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "*"}})
-
-flask_config = FlaskConfig()
-
-app.secret_key = flask_config.secret
-app.config["CORS_HEADERS"] = "Content-Type"
-app.url_map.strict_slashes = False
-app_config = AppConfig()
-
+app = FlaskContainer.app
 
 @app.route("/api/file-server/", methods=["POST"])
 @cross_origin()
@@ -37,37 +26,9 @@ def upload_file():
         name = request.form["name"] + extension
 
     try:
-        if not is_allowed_name(name):
-            return jsonify({"message": "File Name Not Allowed!"}), 400
-
-        with get_db_session(engine) as session:
-            name = re.sub(f"{extension}$", "", name)
-            created_at = datetime.datetime.now()
-
-            file = File(
-                name=name,
-                extension=extension,
-                created_at=created_at,
-            )
-
-            if "comment" in request.form:
-                file.comment = request.form["comment"]
-                
-            session.add(file)
-            session.commit()
-        
-        with get_db_session(engine) as session:    
-            file = session.query(File).filter(File.name == name)\
-                .filter(File.extension == extension)\
-                .filter(File.created_at == created_at).first()
-                    
-            f.save(os.path.join(app_config.path, str(file.id) + file.extension))
-
-            file.size = os.stat(os.path.join(app_config.path, str(file.id) + file.extension)).st_size
+        file = create_file(f, name, extension, request.form['comment'])
             
-            session.commit()
-            
-            return jsonify(file.dict), 200
+        return jsonify(file.dict), 200
     except FileNotFoundError:
         return jsonify({"message": "File Folder Not Found!"}), 500
 
@@ -75,7 +36,7 @@ def upload_file():
 @app.route("/api/file-server/", methods=["GET"])
 @cross_origin()
 def get_all_files():
-    with get_db_session(engine) as session:
+    with DbContainer.get_db_session(DbContainer.engine) as session:
         files = session.query(File).all()
         result = []
 
@@ -88,8 +49,7 @@ def get_all_files():
 @app.route("/api/file-server/<id>/", methods=["GET"])
 @cross_origin()
 def get_file_by_id(id):
-    with get_db_session(engine) as session:
-        print(id)
+    with DbContainer.get_db_session(DbContainer.engine)  as session:
         file = session.query(File).filter(File.id == id).first()
 
         if not file:
@@ -107,9 +67,9 @@ def get_file_by_id(id):
 @cross_origin()
 def update_file_by_id(id):
     if not any((param in request.json for param in ["name", "comment"])):
-        return jsonify({"message": "Method Requires Name, Comment or Path"}), 204
+        return jsonify({"message": "Method Requires Name or Comment"}), 204
 
-    with get_db_session(engine) as session:
+    with DbContainer.get_db_session(DbContainer.engine)  as session:
         file = session.query(File).filter(File.id == id).first()
 
         if not file:
@@ -138,7 +98,7 @@ def update_file_by_id(id):
 @app.route("/api/file-server/<id>/", methods=["DELETE"])
 @cross_origin()
 def delete_file_by_id(id):
-    with get_db_session(engine) as session:
+    with DbContainer.get_db_session(DbContainer.engine)  as session:
         file = session.query(File).filter(File.id == id).first()
 
         if not file:
@@ -154,7 +114,7 @@ def delete_file_by_id(id):
 
 @app.route("/api/file-server/<id>/download", methods=["GET"])
 def download_file(id):
-    with get_db_session(engine) as session:
+    with DbContainer.get_db_session(DbContainer.engine)  as session:
         file = session.query(File).filter(File.id == id).first()
 
         if not file:
@@ -166,7 +126,12 @@ def download_file(id):
             return jsonify({"message": "File Not Found!"}), 404
 
         return send_from_directory(
-            os.path.join(app_config.path),
+            os.path.join(AppContainer.config.path),
             path=str(file.id) + file.extension,
             as_attachment=False,
         )
+    
+
+@app.route("/api/file-server/status", methods=["GET"])
+def check_status():
+    return ({"status": "healthy"})

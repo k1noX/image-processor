@@ -21,6 +21,10 @@ class BaseConfig:
 
 class DatabaseConfig(BaseConfig):
     def __init__(self, config_file="config.yml", section="postgresql"):
+        self.host = ""
+        self.user = ""
+        self.password = ""
+        self.database = ""
         BaseConfig.__init__(
             self, config_file, section, ["user", "password", "host", "database"]
         )
@@ -28,9 +32,14 @@ class DatabaseConfig(BaseConfig):
 
 class FlaskConfig(BaseConfig):
     def __init__(self, config_file="config.yml", section="flask"):
+        self.host = ""
+        self.port = ""
+        self.secret = ""
         BaseConfig.__init__(self, config_file, section, ["secret", "host", "port"])
 
 
 class AppConfig(BaseConfig):
     def __init__(self, config_file="config.yml", section="app"):
+        self.path = ""
+        self.forbidden_characters = ""
         BaseConfig.__init__(self, config_file, section, ["path", "forbidden_characters"])

@@ -48,12 +48,13 @@ services:
       - rabbitnetwork
       - app
     healthcheck:
-      test: curl --fail http://image-processing-api:5050/api/image-processing/ || exit 1
+      test: curl --fail http://image-processing-api:5050/api/image-processing/status || exit 1
       interval: 10s
       timeout: 2s
       retries: 5
 
   worker:
+    restart: always
     env_file:
       - postgresql.env
       - rabbitmq.env
@@ -86,7 +87,7 @@ services:
     networks:
       - app
     healthcheck:
-      test: curl --fail http://simple-file-server:5051/api/file-server/ || exit 1
+      test: curl --fail http://simple-file-server:5051/api/file-server/status || exit 1
       interval: 10s
       timeout: 2s
       retries: 5

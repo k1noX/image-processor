@@ -1,5 +1,5 @@
-from App.Api import app
-from Config.Config import FlaskConfig
+from routers.api import app
+from config.config import FlaskConfig
 
 flask_config = FlaskConfig()
 

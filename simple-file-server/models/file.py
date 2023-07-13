@@ -1,21 +1,15 @@
 import os
-from sqlalchemy import Column, Integer, String, DateTime, BigInteger, create_engine
+from sqlalchemy import Column, Integer, String, DateTime, BigInteger
 from sqlalchemy.orm import declarative_base
 import datetime
 
-from Config.Config import DatabaseConfig, AppConfig
-from Models.SessionMaker import get_db_session
+from config.config import AppConfig
+from injectors.app import AppContainer
+
+from injectors.db import DbContainer
 
 
-db_config = DatabaseConfig()
-app_config = AppConfig()
-engine = create_engine(
-    f"postgresql+psycopg2://{db_config.user}:{db_config.password}" +
-        f"@{db_config.host}/{db_config.database}",
-    future=True,
-)
-
-print(engine.url)
+app_config = AppContainer.config
 
 Base = declarative_base()
 
@@ -53,11 +47,12 @@ class File(Base):
 
         if len(name) == 0:
             raise File.FileError(f"Invalid File Name: {name}!")
-
+        
         if name == self.name:
-            raise File.FileError(f"File is Already Named {self.name}!")
+            self.updated_at = datetime.datetime.now()
+            return
 
-        with get_db_session(engine) as session:
+        with DbContainer.get_db_session(DbContainer.engine) as session:
             if (
                 session.query(File)
                 .filter(File.name == name)
@@ -76,7 +71,7 @@ class File(Base):
 
     @staticmethod
     def create_if_not_exists(
-        session, path: str, name: str, extension: str, size: int = None
+        session, name: str, extension: str, size: int = None
     ) -> "File":
         file: "File" = None
 
@@ -107,14 +102,12 @@ class File(Base):
 
     @property
     def relative_path(self) -> str:
-        return os.path.join(str(self.id) + self.extension)
+        return str(self.id) + self.extension
 
     @property
     def full_path(self) -> str:
-        return os.path.join(
-            app_config.path, str(self.id) + self.extension
-        )
-
+        return AppContainer.get_absolute_path(str(self.id) + self.extension)
+    
     @property
     def dict(self) -> dict:
         return {

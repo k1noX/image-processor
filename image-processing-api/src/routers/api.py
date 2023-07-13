@@ -59,4 +59,8 @@ def restart_task(id):
         return jsonify({"message": "".join(e.args)}), 500
     except Exception:
         return jsonify({"message": "Server Error"}), 500
-    
+
+
+@image_processing_bp.route("/status", methods=["GET"])
+def check_status():
+    return ({"status": "healthy"})

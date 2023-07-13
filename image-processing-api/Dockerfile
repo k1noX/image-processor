@@ -6,6 +6,5 @@ ADD ./requirements.txt /src/requirements.txt
 WORKDIR /src
 RUN pip install -r requirements.txt
 ADD src /src
-COPY ./wsgi.ini /src/wsgi.ini
 EXPOSE 5000
 ENV PYTHONUNBUFFERED=1 

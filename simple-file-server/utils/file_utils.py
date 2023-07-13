@@ -2,10 +2,9 @@
 import re 
 from werkzeug.utils import secure_filename
 
-from Config.Config import AppConfig
+from injectors.app import AppContainer
 
 
-app_config = AppConfig()
 
 symbols = (u"абвгдеёжзийклмнопрстуфхцчшщъыьэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",
            u"abvgdeejzijklmnoprstufhzcss_y_euaABVGDEEJZIJKLMNOPRSTUFHZCSS_Y_EUA")
@@ -14,10 +13,10 @@ pairs = {ord(a):ord(b) for a, b in zip(*symbols)}
 
 
 def is_allowed_name(name) -> str:
-    return not any((c in name) for c in app_config.forbidden_characters)
+    return not any((c in name) for c in AppContainer.config.forbidden_characters)
 
 def is_allowed_folder_name(name: str) -> str:
-    return not any((c in name) for c in app_config.forbidden_characters)
+    return not any((c in name) for c in AppContainer.config.forbidden_characters)
 
 def transliterate(name: str) -> str:
     return name.translate(pairs)
