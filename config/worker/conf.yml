@@ -1,0 +1,16 @@
+postgresql:
+  host: postgres
+  port: 5432
+  database: imageprocessing
+  user: postgres
+  password: masterkey
+  table: tasks
+app:
+  image_formats:
+    - .png
+    - .jpeg
+    - .jpg
+  temp_folder:
+    - ./temp
+  base_image_url: http://file-storage:5051/api/file-server/
+  download_path: /download

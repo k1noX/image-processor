@@ -4,7 +4,7 @@ import os
 
 class BaseConfig:
     def __init__(
-        self, config_file="config.yml", section="postgresql", attr: dict = None
+        self, config_file="/etc/config.yml", section="postgresql", attr: dict = None
     ):
         with open(config_file, "r") as stream:
             data_loaded = yaml.safe_load(stream)
@@ -20,7 +20,7 @@ class BaseConfig:
 
 
 class DatabaseConfig(BaseConfig):
-    def __init__(self, config_file="config.yml", section="postgresql"):
+    def __init__(self, config_file="/etc/config.yml", section="postgresql"):
         self.host = ""
         self.user = ""
         self.password = ""
@@ -31,7 +31,7 @@ class DatabaseConfig(BaseConfig):
 
 
 class FlaskConfig(BaseConfig):
-    def __init__(self, config_file="config.yml", section="flask"):
+    def __init__(self, config_file="/etc/config.yml", section="flask"):
         self.host = ""
         self.port = ""
         self.secret = ""
@@ -39,7 +39,7 @@ class FlaskConfig(BaseConfig):
 
 
 class AppConfig(BaseConfig):
-    def __init__(self, config_file="config.yml", section="app"):
+    def __init__(self, config_file="/etc/config.yml", section="app"):
         self.path = ""
         self.forbidden_characters = ""
         BaseConfig.__init__(self, config_file, section, ["path", "forbidden_characters"])

@@ -2,8 +2,7 @@ FROM python:3.9-alpine
 RUN apk add curl
 RUN apk add python3-dev build-base linux-headers pcre-dev
 RUN pip install uwsgi
-COPY ./requirements.txt /app/requirements.txt
-WORKDIR /app
+WORKDIR /src
+ADD ./requirements.txt /src/requirements.txt
 RUN pip install -r requirements.txt
-COPY . /app
-EXPOSE 5050
+ADD src /src

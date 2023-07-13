@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     env_file:
-      - postgresql.env
+      - ./config/postgresql.env
     restart: always
     image: postgres:15
     volumes:
@@ -15,6 +15,7 @@ services:
       retries: 5
     networks:
       - app
+
   rabbitmq-server:
     image: "rabbitmq:3.6-management-alpine"
     hostname: "rabbitmq-host"
@@ -31,13 +32,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-  image-processing-api:
+
+  image-processor:
     env_file:
-      - postgresql.env
-      - rabbitmq.env
-    build: ./image-processing-api
+      - ./config/postgresql.env
+      - ./config/rabbitmq.env
+    build: 
+      context: ./image-processor
+      dockerfile: image-processor.Dockerfile
     volumes:
-      - ./image-processing-api/src:/src
+      - ./image-processor/src:/src
+      - ./config/image-processor/conf.yml:/src/config/config.yml
+      - ./config/image-processor/wsgi.ini:/src/wsgi.ini
     depends_on:
       postgres:
         condition: service_healthy
@@ -48,7 +54,7 @@ services:
       - rabbitnetwork
       - app
     healthcheck:
-      test: curl --fail http://image-processing-api:5050/api/image-processing/status || exit 1
+      test: curl --fail http://image-processor:5050/api/image-processing/status || exit 1
       interval: 10s
       timeout: 2s
       retries: 5
@@ -56,15 +62,20 @@ services:
   worker:
     restart: always
     env_file:
-      - postgresql.env
-      - rabbitmq.env
-    build: ./image-processing-api
+      - ./config/postgresql.env
+      - ./config/rabbitmq.env
+    build: 
+      context: ./image-processor
+      dockerfile: worker.Dockerfile
     volumes:
-      - ./image-processing-api/src:/src
+      - ./image-processor/src:/src
+      - ./config/worker/conf.yml:/src/config/config.yml
     depends_on:
       postgres:
         condition: service_healthy
       rabbitmq-server:
+        condition: service_healthy
+      file-storage:
         condition: service_healthy
     command: python scripts/worker.py
     networks:
@@ -73,13 +84,18 @@ services:
     deploy:
       mode: replicated
       replicas: 2
-  simple-file-server:
+
+  file-storage:
     env_file:
-      - postgresql.env
-    build: ./simple-file-server
+      - ./config/postgresql.env
+    build: 
+      context: ./file-storage
+      dockerfile: file-storage.Dockerfile
     volumes:
-      - ./simple-file-server:/app
-      - ./simple-file-server/storage:/var/storage
+      - ./file-storage/src:/src
+      - ./file-storage/storage:/var/storage
+      - ./config/file-storage/conf.yml:/src/config/config.yml
+      - ./config/file-storage/wsgi.ini:/src/wsgi.ini
     depends_on:
       postgres:
         condition: service_healthy
@@ -87,7 +103,7 @@ services:
     networks:
       - app
     healthcheck:
-      test: curl --fail http://simple-file-server:5051/api/file-server/status || exit 1
+      test: curl --fail http://file-storage:5051/api/file-server/status || exit 1
       interval: 10s
       timeout: 2s
       retries: 5
@@ -97,13 +113,13 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
     networks:
       - app
     depends_on:
-      image-processing-api:
+      image-processor:
         condition: service_healthy
-      simple-file-server:
+      file-storage:
         condition: service_healthy
 networks:
   rabbitnetwork:
