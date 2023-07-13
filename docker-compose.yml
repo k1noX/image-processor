@@ -113,6 +113,7 @@ services:
     ports:
       - 80:80
     volumes:
+      - ./file-storage/storage:/var/www/html/static_files
       - ./config/nginx.conf:/etc/nginx/nginx.conf
     networks:
       - app

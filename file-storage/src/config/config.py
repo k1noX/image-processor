@@ -42,4 +42,5 @@ class AppConfig(BaseConfig):
     def __init__(self, config_file="/etc/config.yml", section="app"):
         self.path = ""
         self.forbidden_characters = ""
-        BaseConfig.__init__(self, config_file, section, ["path", "forbidden_characters"])
+        self.static_redirect_url = ""
+        BaseConfig.__init__(self, config_file, section, ["path", "forbidden_characters", "static_redirect_url"])

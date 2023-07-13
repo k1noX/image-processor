@@ -10,3 +10,4 @@ flask:
 app:
   path: /var/storage
   forbidden_characters: <>:"|?*
+  static_redirect_url: /static-files/ 

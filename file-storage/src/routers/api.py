@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS, cross_origin
 import os
 
@@ -115,7 +115,7 @@ def delete_file_by_id(id):
 @app.route("/api/file-server/<id>/download", methods=["GET"])
 def download_file(id):
     with DbContainer.get_db_session(DbContainer.engine)  as session:
-        file = session.query(File).filter(File.id == id).first()
+        file: File = session.query(File).filter(File.id == id).first()
 
         if not file:
             return jsonify({"message": "File Not Found!"}), 404
@@ -124,13 +124,9 @@ def download_file(id):
             session.delete(file)
             session.commit()
             return jsonify({"message": "File Not Found!"}), 404
-
-        return send_from_directory(
-            os.path.join(AppContainer.config.path),
-            path=str(file.id) + file.extension,
-            as_attachment=False,
-        )
-    
+        print(f"REDIRECT_URL={AppContainer.config.static_redirect_url}")
+        print(AppContainer.config.static_redirect_url + str(file.id) + str(file.extension))
+        return redirect(AppContainer.config.static_redirect_url + str(file.id) + str(file.extension), 301)
 
 @app.route("/api/file-server/status", methods=["GET"])
 def check_status():
