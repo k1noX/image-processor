@@ -1,6 +1,7 @@
 from algorithms import ImageAlgorithm
 from PIL import Image, ImageOps
 
+
 class RotateAlgorithm(ImageAlgorithm):
     @classmethod
     def process(cls, image: Image.Image, params: dict) -> Image.Image:
@@ -11,4 +12,6 @@ class RotateAlgorithm(ImageAlgorithm):
         if params["direction"] == "counterclockwise":
             return image.rotate(-90, expand=True)
         else:
-            raise ImageAlgorithm.ParamsError("Direction should be either clockwise or counterclockwise")
+            raise ImageAlgorithm.ParamsError(
+                "Direction should be either clockwise or counterclockwise"
+            )

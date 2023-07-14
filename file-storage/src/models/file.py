@@ -37,7 +37,7 @@ class File(Base):
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
-    
+
     class FileError(Exception):
         pass
 
@@ -47,7 +47,7 @@ class File(Base):
 
         if len(name) == 0:
             raise File.FileError(f"Invalid File Name: {name}!")
-        
+
         if name == self.name:
             self.updated_at = datetime.datetime.now()
             return
@@ -95,9 +95,7 @@ class File(Base):
     @property
     def exists(self) -> bool:
         return os.path.isfile(
-            os.path.join(
-                app_config.path, str(self.id) + self.extension
-            )
+            os.path.join(app_config.path, str(self.id) + self.extension)
         )
 
     @property
@@ -107,7 +105,7 @@ class File(Base):
     @property
     def full_path(self) -> str:
         return AppContainer.get_absolute_path(str(self.id) + self.extension)
-    
+
     @property
     def dict(self) -> dict:
         return {

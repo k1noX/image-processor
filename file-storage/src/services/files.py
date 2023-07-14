@@ -11,7 +11,6 @@ class NameNotAllowed(Exception):
     pass
 
 
-
 def create_file(f, name, extension, comment=None):
     if not is_allowed_name(name):
         return NameNotAllowed("File Name Not Allowed!"), 400
@@ -28,19 +27,25 @@ def create_file(f, name, extension, comment=None):
 
         if comment is not None:
             file.comment = comment
-            
+
         session.add(file)
         session.commit()
-    
-    with DbContainer.get_db_session(DbContainer.engine) as session:    
-        file = session.query(File).filter(File.name == name)\
-            .filter(File.extension == extension)\
-            .filter(File.created_at == created_at).first()
-                
+
+    with DbContainer.get_db_session(DbContainer.engine) as session:
+        file = (
+            session.query(File)
+            .filter(File.name == name)
+            .filter(File.extension == extension)
+            .filter(File.created_at == created_at)
+            .first()
+        )
+
         f.save(os.path.join(app_config.path, str(file.id) + file.extension))
 
-        file.size = os.stat(os.path.join(app_config.path, str(file.id) + file.extension)).st_size
-        
+        file.size = os.stat(
+            os.path.join(app_config.path, str(file.id) + file.extension)
+        ).st_size
+
         response = file.dict
 
         session.commit()

@@ -28,5 +28,6 @@ class FlaskContainer:
     @classmethod
     def run(cls):
         cls.app.run(cls.config.host, cls.config.port, debug=cls.config.debug_mode)
-        
+
+
 app = FlaskContainer.app

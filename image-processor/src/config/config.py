@@ -46,7 +46,9 @@ class DatabaseConfig(BaseConfig):
                 ["user", "password", "host", "database", "table", "port"],
             )
         elif load_type == BaseConfig.LoadType.ENV:
-            BaseConfig.load_from_env(self, ["user", "password", "host", "database", "port"])
+            BaseConfig.load_from_env(
+                self, ["user", "password", "host", "database", "port"]
+            )
 
 
 class FlaskConfig(BaseConfig):
@@ -88,9 +90,8 @@ class AppConfig(BaseConfig):
                 ["image_formats", "base_image_url"],
             )
         elif load_type == BaseConfig.LoadType.ENV:
-            BaseConfig.load_from_env(
-                self, ["image_formats", "base_image_url"]
-            )
+            BaseConfig.load_from_env(self, ["image_formats", "base_image_url"])
+
 
 class PikaConfig(BaseConfig):
     def __init__(
@@ -111,20 +112,24 @@ class PikaConfig(BaseConfig):
                 self,
                 config_file,
                 section,
-                ["rabbitmq_host", 
-                 "rabbitmq_username", 
-                 "rabbitmq_password",
-                 "rabbitmq_exchange",
-                 "rabbitmq_routing_key",
-                 "rabbitmq_queue"],
+                [
+                    "rabbitmq_host",
+                    "rabbitmq_username",
+                    "rabbitmq_password",
+                    "rabbitmq_exchange",
+                    "rabbitmq_routing_key",
+                    "rabbitmq_queue",
+                ],
             )
         elif load_type == BaseConfig.LoadType.ENV:
             BaseConfig.load_from_env(
-                self, 
-                ["rabbitmq_host", 
-                 "rabbitmq_username", 
-                 "rabbitmq_password",
-                 "rabbitmq_exchange",
-                 "rabbitmq_routing_key",
-                 "rabbitmq_queue"]
+                self,
+                [
+                    "rabbitmq_host",
+                    "rabbitmq_username",
+                    "rabbitmq_password",
+                    "rabbitmq_exchange",
+                    "rabbitmq_routing_key",
+                    "rabbitmq_queue",
+                ],
             )

@@ -25,7 +25,9 @@ def create_task():
         return jsonify(
             {
                 "task-ids": task_service.create_task(
-                    content["file_ids"], content["algorithm"], content.get("params", None)
+                    content["file_ids"],
+                    content["algorithm"],
+                    content.get("params", None),
                 )
             }
         )
@@ -63,4 +65,4 @@ def restart_task(id):
 
 @image_processing_bp.route("/status", methods=["GET"])
 def check_status():
-    return ({"status": "healthy"})
+    return {"status": "healthy"}

@@ -12,4 +12,3 @@ class ApiContainer:
     @classmethod
     def get_file_download_url(cls, file_id: int) -> str:
         return cls.config.base_image_url + str(file_id) + cls.config.download_path
-

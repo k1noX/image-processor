@@ -36,15 +36,15 @@ def create_task(file_ids: list[int], algorithm: str, params: dict):
                 session.commit()
 
                 task_ids.append(task.id)
-                
+
                 connection = PikaContainer.connection
                 channel = PikaContainer.get_channel(connection)
 
             for id in task_ids:
                 channel.basic_publish(
-                    exchange=PikaContainer.config.rabbitmq_exchange, 
-                    routing_key=PikaContainer.config.rabbitmq_routing_key, 
-                    body=f"{id}"
+                    exchange=PikaContainer.config.rabbitmq_exchange,
+                    routing_key=PikaContainer.config.rabbitmq_routing_key,
+                    body=f"{id}",
                 )
 
             connection.close()
@@ -58,23 +58,26 @@ def get_task_by_id(id: int) -> Task:
     with DbContainer.get_db_session(engine=DbContainer.engine) as session:
         task: Task = session.query(Task).filter(Task.id == id).first()
         return task
-    
+
+
 def restart_task(id: int) -> Task:
     with DbContainer.get_db_session(engine=DbContainer.engine) as session:
         task: Task = session.query(Task).filter(Task.id == id).first()
         if task.status == TaskStatus.FINISHED or task.status == TaskStatus.PROCESSING:
-            raise TaskRestartException("Task has already been finished or is in process!")
-        task.status = TaskStatus.PENDING 
+            raise TaskRestartException(
+                "Task has already been finished or is in process!"
+            )
+        task.status = TaskStatus.PENDING
 
         connection = PikaContainer.connection
         channel = PikaContainer.get_channel(connection)
 
         channel.basic_publish(
-            exchange=PikaContainer.config.rabbitmq_exchange, 
-            routing_key=PikaContainer.config.rabbitmq_routing_key, 
-            body=f"{id}"
+            exchange=PikaContainer.config.rabbitmq_exchange,
+            routing_key=PikaContainer.config.rabbitmq_routing_key,
+            body=f"{id}",
         )
 
         connection.close()
-        
+
         return task

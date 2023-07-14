@@ -18,10 +18,10 @@ class DbContainer:
     def engine(cls) -> Engine:
         if cls.db_engine is None:
             cls.db_engine = create_engine(
-                f"postgresql+psycopg2://{cls.config.user}:{cls.config.password}" +
-                    f"@{cls.config.host}/{cls.config.database}",
-            future=True,
-        )
+                f"postgresql+psycopg2://{cls.config.user}:{cls.config.password}"
+                + f"@{cls.config.host}/{cls.config.database}",
+                future=True,
+            )
         return cls.db_engine
 
     @classmethod

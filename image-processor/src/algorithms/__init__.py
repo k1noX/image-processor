@@ -1,8 +1,10 @@
 from PIL import Image
 
+
 class ImageAlgorithm:
     class ParamsError(Exception):
         pass
+
     class AlgorithmError(Exception):
         pass
 

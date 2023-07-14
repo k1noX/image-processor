@@ -1,12 +1,13 @@
 from models.task import Task, TaskStatus
 from injectors.db import DbContainer
 from injectors.app import ApiContainer
-import requests 
+import requests
 from handler.handler import Handler
 from io import BytesIO
 from PIL import Image
 from sqlalchemy.orm.exc import NoResultFound
 import logging
+
 
 def process_task(id: int):
     with DbContainer.get_db_session(DbContainer.engine) as session:
@@ -33,27 +34,37 @@ def process_task(id: int):
                 image_request = requests.get(file_url, allow_redirects=True)
                 image_io = BytesIO(image_request.content)
                 image = Image.open(image_io)
-                logging.info("Received %d bytes from request to %s", image_io.tell(), image_request.url)
+                logging.info(
+                    "Received %d bytes from request to %s",
+                    image_io.tell(),
+                    image_request.url,
+                )
                 result = Handler.handle(image, task.algorithm, task.params)
                 with BytesIO() as output:
                     result.save(output, format="PNG")
-                    logging.info("Received %d bytes as %s output", output.tell(), task.algorithm)
+                    logging.info(
+                        "Received %d bytes as %s output", output.tell(), task.algorithm
+                    )
                     output.seek(0)
-                    logging.info("Trying to send %d bytes to %s", output.tell(), ApiContainer.config.base_image_url)
+                    logging.info(
+                        "Trying to send %d bytes to %s",
+                        output.tell(),
+                        ApiContainer.config.base_image_url,
+                    )
                     post_req = requests.post(
                         ApiContainer.config.base_image_url,
                         files={
-                            'file': (
-                                f'task_{task.id}_result.png',
+                            "file": (
+                                f"task_{task.id}_result.png",
                                 output,
-                                'multipart/form-data'
+                                "multipart/form-data",
                             )
                         },
                     )
                     logging.info("Request finished with code %d", post_req.status_code)
                     post_req.raise_for_status()
                     new_file = post_req.json()
-                    task.result_id = new_file['id']
+                    task.result_id = new_file["id"]
                     task.status = TaskStatus.FINISHED
             else:
                 task.status = TaskStatus.ERROR
