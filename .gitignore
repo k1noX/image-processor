@@ -153,4 +153,5 @@ cython_debug/
 
 config.yml
 */src/wsgi.ini
-*/storage
+compose/file-storage/storage
+compose/postgres/data

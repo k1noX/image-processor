@@ -16,7 +16,7 @@
 ```
 ├── README.md
 ├── docker-compose.yml
-├── config
+├── compose
 │   ├── file-storage
 │   │   ├── conf.yml
 │   │   └── wsgi.ini
@@ -25,9 +25,12 @@
 │   │   └── wsgi.ini
 │   ├── worker
 │   │   └── conf.yml
-│   ├── nginx.conf
-│   ├── postgresql.env
-│   └── rabbitmq.env
+│   ├── nginx
+│   │   └── nginx.conf
+│   ├── postgres
+│   │   └── postgresql.env
+│   └── rabbitmq
+│       └── rabbitmq.env
 ├── file-storage
 │   ├── src
 │   │   ├── config
