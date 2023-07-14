@@ -1,5 +1,5 @@
 FROM python:3.9-alpine
-ADD ./requirements.txt /src/requirements.txt
+ADD ./worker-requirements.txt /src/requirements.txt
 WORKDIR /src
 RUN pip install -r requirements.txt
 ADD src /src
