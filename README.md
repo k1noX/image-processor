@@ -155,7 +155,7 @@ RESPONSE
   "comment": "описание",
   "size": 14494,
   "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
-  "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT"
+  "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT",
 }
 ```
 
@@ -176,6 +176,8 @@ REQUEST
     "result_id": null,
     "status": "pending",
     "algorithm": "resize",
+    "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
+    "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT",
     "params": {
         "width": 128,
         "height": 128
@@ -186,6 +188,8 @@ REQUEST
     "source_id": 3,
     "result_id": 4,
     "status": "finished",
+    "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
+    "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT",
     "algorithm": "resize",
     "params": {
         "width": 128,
@@ -197,6 +201,8 @@ REQUEST
     "source_id": 3,
     "result_id": null,
     "status": "error",
+    "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
+    "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT",
     "algorithm": "flip",
     "params": null
   },
@@ -205,6 +211,8 @@ REQUEST
     "source_id": 3,
     "result_id": null,
     "status": "processing",
+    "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
+    "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT",
     "algorithm": "flip",
     "params": null
   }
@@ -246,6 +254,8 @@ RESPONSE
   "result_id": null,
   "status": "pending",
   "algorithm": "resize",
+  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
+  "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT",
   "params": {
     "width": 128,
     "height": 128
@@ -264,6 +274,8 @@ RESPONSE
   "source_id": 1,
   "result_id": null,
   "status": "pending",
+  "created_at": "Tue, 04 Jul 2023 07:43:20 GMT",
+  "updated_at": "Tue, 04 Jul 2023 07:44:50 GMT",
   "algorithm": "resize",
   "params": {
     "width": 128,
