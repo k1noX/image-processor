@@ -23,11 +23,12 @@ def process_task(id: int):
         except NoResultFound:
             return
         file_url = ApiContainer.get_file_download_url(task.source_id)
+        print(file_url)
         try:
-            r = requests.head(file_url)
+            r = requests.get(file_url, allow_redirects=True)
             r.raise_for_status()
             if r.headers["Content-Type"].startswith("image"):
-                image_request = requests.get(file_url)
+                image_request = requests.get(file_url, allow_redirects=True)
                 image_io = BytesIO(image_request.content)
                 image = Image.open(image_io)
                 logging.info("Received %d bytes from request to %s", image_io.tell(), image_request.url)

@@ -153,3 +153,4 @@ cython_debug/
 
 config.yml
 */src/wsgi.ini
+*/storage

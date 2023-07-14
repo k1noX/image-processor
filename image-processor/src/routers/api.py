@@ -25,7 +25,7 @@ def create_task():
         return jsonify(
             {
                 "task-ids": task_service.create_task(
-                    content["file_ids"], content["algorithm"], content["params"]
+                    content["file_ids"], content["algorithm"], content.get("params", None)
                 )
             }
         )

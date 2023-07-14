@@ -78,18 +78,18 @@ class AppConfig(BaseConfig):
     ):
         self.image_formats: list = []
         self.base_image_url: str = ""
-        self.download_path: str = ""
+        self.download_path: str = "/local-download"
 
         if load_type == BaseConfig.LoadType.FILE:
             BaseConfig.load_from_file(
                 self,
                 config_file,
                 section,
-                ["image_formats", "base_image_url", "download_path"],
+                ["image_formats", "base_image_url"],
             )
         elif load_type == BaseConfig.LoadType.ENV:
             BaseConfig.load_from_env(
-                self, ["image_formats", "base_image_url", "download_path"]
+                self, ["image_formats", "base_image_url"]
             )
 
 class PikaConfig(BaseConfig):

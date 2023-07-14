@@ -43,4 +43,5 @@ class AppConfig(BaseConfig):
         self.path = ""
         self.forbidden_characters = ""
         self.static_redirect_url = ""
-        BaseConfig.__init__(self, config_file, section, ["path", "forbidden_characters", "static_redirect_url"])
+        self.local_static_redirect_url = ""
+        BaseConfig.__init__(self, config_file, section, ["path", "forbidden_characters", "static_redirect_url", "local_static_redirect_url"])

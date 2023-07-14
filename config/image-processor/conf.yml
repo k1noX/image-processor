@@ -16,5 +16,5 @@ app:
     - .jpg
   temp_folder:
     - ./temp
-  base_image_url: http://file-storage:5051/api/file-server/
-  download_path: /download
+  base_image_url: http://nginx/api/file-server/
+  download_path: /local-download

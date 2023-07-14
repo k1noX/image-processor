@@ -26,9 +26,9 @@ def upload_file():
         name = request.form["name"] + extension
 
     try:
-        file = create_file(f, name, extension, request.form['comment'])
+        file = create_file(f, name, extension, request.form.get('comment', None))
             
-        return jsonify(file.dict), 200
+        return jsonify(file), 200
     except FileNotFoundError:
         return jsonify({"message": "File Folder Not Found!"}), 500
 
@@ -113,6 +113,7 @@ def delete_file_by_id(id):
 
 
 @app.route("/api/file-server/<id>/download", methods=["GET"])
+@cross_origin()
 def download_file(id):
     with DbContainer.get_db_session(DbContainer.engine)  as session:
         file: File = session.query(File).filter(File.id == id).first()
@@ -124,9 +125,25 @@ def download_file(id):
             session.delete(file)
             session.commit()
             return jsonify({"message": "File Not Found!"}), 404
-        print(f"REDIRECT_URL={AppContainer.config.static_redirect_url}")
-        print(AppContainer.config.static_redirect_url + str(file.id) + str(file.extension))
+        
         return redirect(AppContainer.config.static_redirect_url + str(file.id) + str(file.extension), 301)
+
+
+@app.route("/api/file-server/<id>/local-download", methods=["GET"])
+def local_download_file(id):
+    with DbContainer.get_db_session(DbContainer.engine)  as session:
+        file: File = session.query(File).filter(File.id == id).first()
+
+        if not file:
+            return jsonify({"message": "File Not Found!"}), 404
+
+        if not file.exists:
+            session.delete(file)
+            session.commit()
+            return jsonify({"message": "File Not Found!"}), 404
+        
+        return redirect(AppContainer.config.local_static_redirect_url + str(file.id) + str(file.extension), 301)
+    
 
 @app.route("/api/file-server/status", methods=["GET"])
 def check_status():

@@ -41,4 +41,8 @@ def create_file(f, name, extension, comment=None):
 
         file.size = os.stat(os.path.join(app_config.path, str(file.id) + file.extension)).st_size
         
+        response = file.dict
+
         session.commit()
+
+        return response
