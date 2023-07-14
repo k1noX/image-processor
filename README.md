@@ -24,6 +24,7 @@
 │   │   ├── conf.yml
 │   │   └── wsgi.ini
 │   ├── worker
+│   │   └── conf.yml
 │   ├── nginx.conf
 │   ├── postgresql.env
 │   └── rabbitmq.env
