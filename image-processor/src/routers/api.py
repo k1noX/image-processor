@@ -39,7 +39,7 @@ def create_task():
         return jsonify({"message": "Server Error"}), 500
 
 
-@image_processing_bp.route("/<id>/", methods=["GET"])
+@image_processing_bp.route("/<id>", methods=["GET"])
 def get_task_by_id(id):
     try:
         return jsonify(task_service.get_task_by_id(id).dict)
@@ -51,7 +51,7 @@ def get_task_by_id(id):
         return jsonify({"message": "Server Error"}), 500
 
 
-@image_processing_bp.route("/<id>/restart/", methods=["POST"])
+@image_processing_bp.route("/<id>/restart", methods=["POST"])
 def restart_task(id):
     try:
         return jsonify(task_service.restart_task(id).dict)
