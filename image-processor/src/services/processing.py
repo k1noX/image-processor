@@ -26,6 +26,8 @@ def process_task(id: int):
         print(file_url)
         try:
             r = requests.get(file_url, allow_redirects=True)
+            print(r.status_code)
+            print(r.headers["Content-Type"])
             r.raise_for_status()
             if r.headers["Content-Type"].startswith("image"):
                 image_request = requests.get(file_url, allow_redirects=True)

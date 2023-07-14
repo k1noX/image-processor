@@ -8,7 +8,7 @@ class FlipAlgoithm(ImageAlgorithm):
             raise ImageAlgorithm.ParamsError("Required parameters: orientation")
         if params["orientation"] == "vertical":
             return ImageOps.mirror(image)
-        if params["orientation"] == "horizontal":
+        elif params["orientation"] == "horizontal":
             return ImageOps.flip(image)
         else:
             raise ImageAlgorithm.ParamsError("Orientation should be either horizontal or vertical")
