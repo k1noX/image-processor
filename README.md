@@ -13,7 +13,7 @@
 2. `docker-compose up --build`.
 
 ## Структура проекта 
-
+```
 ├── README.md
 ├── docker-compose.yml
 ├── config
@@ -52,7 +52,7 @@
     ├── image-processor.Dockerfile
     ├── worker.Dockerfile
     └── requirements.txt
-
+```
 ## Использование
 
 ## API
