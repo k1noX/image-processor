@@ -1,7 +1,8 @@
-# Сервер файловой системы
+# Обработка изображений и файловый сервер
 
-Основные использованные библиотеки:
+Основные использованные технологии:
 1. Flask.
+2. uWSGI.
 3. PostgreSQL.
 4. RabbitMQ.
 5. Nginx.
@@ -10,6 +11,47 @@
 
 1. Клонирование репозитория.
 2. `docker-compose up --build`.
+
+## Структура проекта 
+
+├── README.md
+├── docker-compose.yml
+├── config
+│   ├── file-storage
+│   │   ├── conf.yml
+│   │   └── wsgi.ini
+│   ├── image-processor
+│   │   ├── conf.yml
+│   │   └── wsgi.ini
+│   ├── worker
+│   ├── nginx.conf
+│   ├── postgresql.env
+│   └── rabbitmq.env
+├── file-storage
+│   ├── src
+│   │   ├── config
+│   │   ├── injectors
+│   │   ├── services
+│   │   ├── models
+│   │   ├── routers
+│   │   ├── utils
+│   │   └── app.py
+│   ├── file-storage.Dockerfile
+│   └── requirements.txt
+└── image-processor
+    ├── src
+    │   ├── algorithms
+    │   ├── config
+    │   ├── handler
+    │   ├── injectors
+    │   ├── services
+    │   ├── models
+    │   ├── routers
+    │   ├── scripts
+    │   └── app.py
+    ├── image-processor.Dockerfile
+    ├── worker.Dockerfile
+    └── requirements.txt
 
 ## Использование
 
@@ -91,7 +133,7 @@ RESPONSE
 
 RESPONSE - File
 
-#### PUT /api/file-server/[id]
+#### PATCH /api/file-server/[id]
 
 > Обновление данных о файле по его id.
 
@@ -127,42 +169,44 @@ RESPONSE
 REQUEST
 ```json
 [
-    {
-        "id": 1,
-        "source_id": 1,
-        "result_id": null,
-        "status": "pending",
-        "algorithm": "resize",
-        "params": {
-            "width": 128,
-            "height": 128
-        }
-    },
-    {
-        "id": 2,
-        "source_id": 3,
-        "result_id": 4,
-        "status": "finished",
-        "algorithm": "resize",
-        "params": {
-            "width": 128,
-            "height": 128
-        }
-    },
-    {
-        "id": 3,
-        "source_id": 3,
-        "result_id": null,
-        "status": "error",
-        "algorithm": "flip"
-    },
-    {
-        "id": 4,
-        "source_id": 3,
-        "result_id": null,
-        "status": "processing",
-        "algorithm": "flip"
+  {
+    "id": 1,
+    "source_id": 1,
+    "result_id": null,
+    "status": "pending",
+    "algorithm": "resize",
+    "params": {
+        "width": 128,
+        "height": 128
     }
+  },
+  {
+    "id": 2,
+    "source_id": 3,
+    "result_id": 4,
+    "status": "finished",
+    "algorithm": "resize",
+    "params": {
+        "width": 128,
+        "height": 128
+    }
+  },
+  {
+    "id": 3,
+    "source_id": 3,
+    "result_id": null,
+    "status": "error",
+    "algorithm": "flip",
+    "params": null
+  },
+  {
+    "id": 4,
+    "source_id": 3,
+    "result_id": null,
+    "status": "processing",
+    "algorithm": "flip",
+    "params": null
+  }
 ]
 ```
 
@@ -193,7 +237,7 @@ RESPONSE
 
 > Получение задачи по id.
 
-REQUEST
+RESPONSE
 ```json
 {
   "id": 1,
@@ -212,7 +256,7 @@ REQUEST
 
 > Перезапуск выполнения задачи, завершённой с ошибкой.
 
-REQUEST
+RESPONSE
 ```json
 {
   "id": 1,
